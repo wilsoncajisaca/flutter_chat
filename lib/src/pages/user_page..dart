@@ -9,29 +9,29 @@ class UserPage extends StatefulWidget {
 
 class _UserPageState extends State<UserPage> {
   final users = [
-    User(
-      uuid: '1',
-      email: 'wilsoncajisca@gmail.com',
-      name: 'Freddy Cajisaca',
-      online: true,
-    ),
-    User(
-        uuid: '1',
-        email: 'wilsoncajisca@gmail.com',
-        name: 'Wilson Cajisaca',
-        online: false),
-    User(
-      uuid: '1',
-      email: 'wilsoncajisca@gmail.com',
-      name: 'Jenny Cajisaca',
-      online: true,
-    ),
-    User(
-      uuid: '1',
-      email: 'wilsoncajisca@gmail.com',
-      name: 'Luis Cajisaca',
-      online: false,
-    ),
+    // User(
+    //   uuid: '1',
+    //   email: 'wilsoncajisca@gmail.com',
+    //   name: 'Freddy Cajisaca',
+    //   online: true,
+    // ),
+    // User(
+    //     uuid: '1',
+    //     email: 'wilsoncajisca@gmail.com',
+    //     name: 'Wilson Cajisaca',
+    //     online: false),
+    // User(
+    //   uuid: '1',
+    //   email: 'wilsoncajisca@gmail.com',
+    //   name: 'Jenny Cajisaca',
+    //   online: true,
+    // ),
+    // User(
+    //   uuid: '1',
+    //   email: 'wilsoncajisca@gmail.com',
+    //   name: 'Luis Cajisaca',
+    //   online: false,
+    // ),
   ];
 
   RefreshController _refreshController =

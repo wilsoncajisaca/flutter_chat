@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_socket/src/services/auth_services.dart';
 import 'package:flutter_chat_socket/src/widgets/blue_buttom.dart';
 import 'package:flutter_chat_socket/src/widgets/labels.dart';
 import 'package:flutter_chat_socket/src/widgets/logo.dart';
 import 'package:flutter_chat_socket/src/widgets/textfiel_custom.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -52,6 +54,7 @@ class __FormStateState extends State<_FormState> {
   final passCtrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final authServices = Provider.of<AuthServices>(context);
     return Container(
       child: Column(
         children: [
@@ -70,10 +73,13 @@ class __FormStateState extends State<_FormState> {
           SizedBox(height: 10),
           BlueButtom(
             titleText: "Ingresar",
-            onPressed: () {
-              print(emailCtrl.text);
-              print(passCtrl.text);
-            },
+            onPressed: authServices.autenticando
+                ? null
+                : () {
+                    FocusScope.of(context).unfocus();
+                    authServices.login(
+                        emailCtrl.text.trim(), passCtrl.text.trim());
+                  },
           ),
         ],
       ),
