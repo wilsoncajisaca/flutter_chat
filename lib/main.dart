@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_socket/src/pages/chat_page.dart';
 import 'package:flutter_chat_socket/src/pages/login_page.dart';
-import 'package:flutter_chat_socket/src/pages/user_page..dart';
+import 'package:flutter_chat_socket/src/pages/splash_page.dart';
 import 'package:flutter_chat_socket/src/services/auth_services.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +18,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Material App',
-        home: LoginPage(),
+        home: SplashPage(),
         routes: appRoutes,
       ),
     );

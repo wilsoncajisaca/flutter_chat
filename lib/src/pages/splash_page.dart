@@ -1,12 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_socket/src/pages/login_page.dart';
+import 'package:flutter_chat_socket/src/pages/user_page..dart';
+import 'package:flutter_chat_socket/src/services/auth_services.dart';
+import 'package:provider/provider.dart';
 
 class SplashPage extends StatelessWidget {
-  const SplashPage({Key key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Text("data"),
+    return Scaffold(
+      body: FutureBuilder(
+        future: checkLoginState(context),
+        builder: (context, snapshot) {
+          return Center(
+            child: Text("Validando..."),
+          );
+        },
+      ),
     );
+  }
+
+  Future checkLoginState(BuildContext context) async {
+    final authServices = Provider.of<AuthServices>(context, listen: false);
+    final autenticado = await authServices.isLoogedIn();
+    if (autenticado) {
+      //TODO: Conectar al socket server
+      Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => UserPage(),
+          transitionDuration: Duration(milliseconds: 0),
+        ),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => LoginPage(),
+          transitionDuration: Duration(milliseconds: 0),
+        ),
+      );
+    }
   }
 }

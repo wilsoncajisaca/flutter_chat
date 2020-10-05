@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_socket/src/models/user.dart';
+import 'package:flutter_chat_socket/src/services/auth_services.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UserPage extends StatefulWidget {
@@ -8,49 +10,33 @@ class UserPage extends StatefulWidget {
 }
 
 class _UserPageState extends State<UserPage> {
-  final users = [
-    // User(
-    //   uuid: '1',
-    //   email: 'wilsoncajisca@gmail.com',
-    //   name: 'Freddy Cajisaca',
-    //   online: true,
-    // ),
-    // User(
-    //     uuid: '1',
-    //     email: 'wilsoncajisca@gmail.com',
-    //     name: 'Wilson Cajisaca',
-    //     online: false),
-    // User(
-    //   uuid: '1',
-    //   email: 'wilsoncajisca@gmail.com',
-    //   name: 'Jenny Cajisaca',
-    //   online: true,
-    // ),
-    // User(
-    //   uuid: '1',
-    //   email: 'wilsoncajisca@gmail.com',
-    //   name: 'Luis Cajisaca',
-    //   online: false,
-    // ),
-  ];
-
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
+  final users = [];
 
   @override
   Widget build(BuildContext context) {
+    final authServices = Provider.of<AuthServices>(context);
+    final user = authServices.user;
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Chat",
+          user.name,
           style: TextStyle(color: Colors.black),
         ),
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.transparent,
-        leading: BackButton(
-          color: Colors.black,
-          onPressed: () {},
+        leading: IconButton(
+          icon: Icon(
+            Icons.exit_to_app,
+            color: Colors.black54,
+          ),
+          onPressed: () {
+            //TODO: Desconectar el socket server
+            AuthServices.deleteToken();
+            Navigator.pushReplacementNamed(context, 'login');
+          },
         ),
         actions: [
           Container(

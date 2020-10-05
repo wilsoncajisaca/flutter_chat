@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_socket/src/helpers/show_alert.dart';
 import 'package:flutter_chat_socket/src/services/auth_services.dart';
 import 'package:flutter_chat_socket/src/widgets/blue_buttom.dart';
 import 'package:flutter_chat_socket/src/widgets/labels.dart';
@@ -75,10 +76,20 @@ class __FormStateState extends State<_FormState> {
             titleText: "Ingresar",
             onPressed: authServices.autenticando
                 ? null
-                : () {
+                : () async {
                     FocusScope.of(context).unfocus();
-                    authServices.login(
-                        emailCtrl.text.trim(), passCtrl.text.trim());
+                    final loginOk = await authServices.login(
+                      emailCtrl.text.trim(),
+                      passCtrl.text.trim(),
+                    );
+
+                    if (loginOk) {
+                      //TODO: Conectar a nuestros sockets
+                      Navigator.pushReplacementNamed(context, 'users');
+                    } else {
+                      showAlert(context, 'Login Incorrecto',
+                          'Revise sus credenciales');
+                    }
                   },
           ),
         ],
