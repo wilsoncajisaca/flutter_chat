@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_socket/src/pages/login_page.dart';
 import 'package:flutter_chat_socket/src/pages/user_page..dart';
 import 'package:flutter_chat_socket/src/services/auth_services.dart';
+import 'package:flutter_chat_socket/src/services/socket_service.dart';
 import 'package:provider/provider.dart';
 
 class SplashPage extends StatelessWidget {
@@ -21,9 +22,10 @@ class SplashPage extends StatelessWidget {
 
   Future checkLoginState(BuildContext context) async {
     final authServices = Provider.of<AuthServices>(context, listen: false);
+    final socketService = Provider.of<SocketService>(context, listen: false);
     final autenticado = await authServices.isLoogedIn();
     if (autenticado) {
-      //TODO: Conectar al socket server
+      socketService.connect();
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(

@@ -2,7 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_socket/src/models/messages_response.dart';
+import 'package:flutter_chat_socket/src/services/auth_services.dart';
+import 'package:flutter_chat_socket/src/services/chat_services.dart';
+import 'package:flutter_chat_socket/src/services/socket_service.dart';
 import 'package:flutter_chat_socket/src/widgets/chat_message.dart';
+import 'package:provider/provider.dart';
 
 class ChatPage extends StatefulWidget {
   @override
@@ -14,8 +19,53 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
   final _focusNode = FocusNode();
   bool _writing = false;
   List<ChatMessage> _message = [];
+  ChatService _chatService;
+  SocketService _socketService;
+  AuthServices _authServices;
+  @override
+  void initState() {
+    super.initState();
+    this._chatService = Provider.of<ChatService>(context, listen: false);
+    this._socketService = Provider.of<SocketService>(context, listen: false);
+    this._authServices = Provider.of<AuthServices>(context, listen: false);
+    this._socketService.socket.on('send-message', _messageListening);
+    _getHistoryMessages(this._chatService.toUser.uid);
+  }
+
+  _getHistoryMessages(String userId) async {
+    List<Message> chat = await this._chatService.getChat(userId);
+    final history = chat.map((e) => ChatMessage(
+          textMessage: e.message,
+          uid: e.from,
+          animationController: AnimationController(
+            vsync: this,
+            duration: Duration(milliseconds: 0),
+          )..forward(),
+        ));
+    setState(() {
+      _message.insertAll(0, history);
+    });
+  }
+
+  _messageListening(dynamic data) async {
+    ChatMessage message = ChatMessage(
+      uid: data['from'],
+      textMessage: data['message'],
+      animationController: AnimationController(
+        vsync: this,
+        duration: Duration(milliseconds: 300),
+      ),
+    );
+
+    setState(() {
+      _message.insert(0, message);
+    });
+    message.animationController.forward();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final user = this._chatService.toUser;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -26,14 +76,14 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
           children: [
             CircleAvatar(
               child: Text(
-                'Wi',
+                user.name.substring(0, 2),
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
               ),
               maxRadius: 13,
               backgroundColor: Colors.blue[100],
             ),
             Text(
-              "Wilson Cajisaca",
+              user.name,
               style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
@@ -115,14 +165,14 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     );
   }
 
-  _handleSubmit(String txt) {
-    if (txt.length == 0) return;
+  _handleSubmit(String message) {
+    if (message.length == 0) return;
 
     _txtController.clear();
     _focusNode.requestFocus();
     final newMessage = ChatMessage(
-      uid: '123',
-      textMessage: txt.trim(),
+      uid: _authServices.user.uid,
+      textMessage: message.trim(),
       animationController: AnimationController(
         vsync: this,
         duration: Duration(milliseconds: 450),
@@ -133,14 +183,20 @@ class _ChatPageState extends State<ChatPage> with TickerProviderStateMixin {
     setState(() {
       _writing = false;
     });
+
+    this._socketService.emit('send-message', {
+      'from': _authServices.user.uid,
+      'to': _chatService.toUser.uid,
+      'message': message
+    });
   }
 
   @override
   void dispose() {
-    // TODO: off socket
     for (ChatMessage message in _message) {
       message.animationController.dispose();
     }
+    this._socketService.socket.off('send-message');
     super.dispose();
   }
 }
